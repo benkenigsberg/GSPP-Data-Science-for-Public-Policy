@@ -1,0 +1,668 @@
+---
+title: 'Reassessing LaGuardia's Perimeter Rule'
+author: "Ben Kenigsberg"
+date: "December 8, 2016"
+output: slidy_presentation
+---
+
+In the 1950s, the Port Authority of New York and New Jersey enacted a “perimeter rule” at LaGuardia. Kennedy Airport (then Idlewild) had just opened, but the majority of passengers continued to favor LaGuardia because it was closer to Manhattan.
+
+##
+
+By making a rule that no flights traveling more than 2,000 miles (lowered in 1984 to 1,500 miles) could depart from LaGuardia, the Port Authority pushed West Coast and international flights to JFK and Newark.
+
+## 
+
+Proponents of changing the rule, including the New York Times editorial board, argue that eliminating the rule will increase competition and lead to better prices for consumers. But while the perimeter rule may no longer serve its initial purpose, it is nevertheless possible that it increases regional service and keeps LaGuardia manageable relative to its capacity. 
+
+## 
+
+Delta, which has a major hub at LaGuardia, is lobbying for a change in the rule; United, which consolidated at Newark after merging with Continental in 2010, is lobbying against a change, as is JetBlue, which uses JFK as its main New York base. 
+
+##
+
+Delta argues that the perimeter rule effectively limits its passenger traffic at LaGuardia. "Just 7 percent of flights at LGA utilize aircraft with 150 or more seats," writes Delta president Ed Bastian, in the letters submitted for and against a change (available at corpinfo.panynj.gov/files/uploads/documents/freedom-of-information/foi-fulfilled-requests/16274-O-A_bjyp8Fp.pdf).
+
+##
+
+To find out which airlines and destinations will be most affected, let's look at data from the last 20 years (Oct. 1996 through Sept. 2016) downloaded from the Bureau of Transportation Statistics (transtats.bts.gov). Each of the 240 .csv files includes data on one month's flight traffic. Each line represents one flight that departed from a U.S. airport.
+
+
+```{r setup, include=FALSE}
+
+library(readr)
+library(dplyr)
+library(haven)
+library(tidyverse)
+
+oct96 <- read_csv("oct96.csv")
+nov96 <- read_csv("nov96.csv")
+dec96 <- read_csv("dec96.csv")
+jan97 <- read_csv("jan97.csv")
+feb97 <- read_csv("feb97.csv")
+mar97 <- read_csv("mar97.csv")
+apr97 <- read_csv("apr97.csv")
+may97 <- read_csv("may97.csv")
+jun97 <- read_csv("jun97.csv")
+jul97 <- read_csv("jul97.csv")
+aug97 <- read_csv("aug97.csv")
+sep97 <- read_csv("sep97.csv")
+
+oct97 <- read_csv("oct97.csv")
+nov97 <- read_csv("nov97.csv")
+dec97 <- read_csv("dec97.csv")
+jan98 <- read_csv("jan98.csv")
+feb98 <- read_csv("feb98.csv")
+mar98 <- read_csv("mar98.csv")
+apr98 <- read_csv("apr98.csv")
+may98 <- read_csv("may98.csv")
+jun98 <- read_csv("jun98.csv")
+jul98 <- read_csv("jul98.csv")
+aug98 <- read_csv("aug98.csv")
+sep98 <- read_csv("sep98.csv")
+
+oct98 <- read_csv("oct98.csv")
+nov98 <- read_csv("nov98.csv")
+dec98 <- read_csv("dec98.csv")
+jan99 <- read_csv("jan99.csv")
+feb99 <- read_csv("feb99.csv")
+mar99 <- read_csv("mar99.csv")
+apr99 <- read_csv("apr99.csv")
+may99 <- read_csv("may99.csv")
+jun99 <- read_csv("jun99.csv")
+jul99 <- read_csv("jul99.csv")
+aug99 <- read_csv("aug99.csv")
+sep99 <- read_csv("sep99.csv")
+
+oct99 <- read_csv("oct99.csv")
+nov99 <- read_csv("nov99.csv")
+dec99 <- read_csv("dec99.csv")
+jan00 <- read_csv("jan00.csv")
+feb00 <- read_csv("feb00.csv")
+mar00 <- read_csv("mar00.csv")
+apr00 <- read_csv("apr00.csv")
+may00 <- read_csv("may00.csv")
+jun00 <- read_csv("jun00.csv")
+jul00 <- read_csv("jul00.csv")
+aug00 <- read_csv("aug00.csv")
+sep00 <- read_csv("sep00.csv")
+
+oct00 <- read_csv("oct00.csv")
+nov00 <- read_csv("nov00.csv")
+dec00 <- read_csv("dec00.csv")
+jan01 <- read_csv("jan01.csv")
+feb01 <- read_csv("feb01.csv")
+mar01 <- read_csv("mar01.csv")
+apr01 <- read_csv("apr01.csv")
+may01 <- read_csv("may01.csv")
+jun01 <- read_csv("jun01.csv")
+jul01 <- read_csv("jul01.csv")
+aug01 <- read_csv("aug01.csv")
+sep01 <- read_csv("sep01.csv")
+
+oct01 <- read_csv("oct01.csv")
+nov01 <- read_csv("nov01.csv")
+dec01 <- read_csv("dec01.csv")
+jan02 <- read_csv("jan02.csv")
+feb02 <- read_csv("feb02.csv")
+mar02 <- read_csv("mar02.csv")
+apr02 <- read_csv("apr02.csv")
+may02 <- read_csv("may02.csv")
+jun02 <- read_csv("jun02.csv")
+jul02 <- read_csv("jul02.csv")
+aug02 <- read_csv("aug02.csv")
+sep02 <- read_csv("sep02.csv")
+
+oct02 <- read_csv("oct02.csv")
+nov02 <- read_csv("nov02.csv")
+dec02 <- read_csv("dec02.csv")
+jan03 <- read_csv("jan03.csv")
+feb03 <- read_csv("feb03.csv")
+mar03 <- read_csv("mar03.csv")
+apr03 <- read_csv("apr03.csv")
+may03 <- read_csv("may03.csv")
+jun03 <- read_csv("jun03.csv")
+jul03 <- read_csv("jul03.csv")
+aug03 <- read_csv("aug03.csv")
+sep03 <- read_csv("sep03.csv")
+
+oct03 <- read_csv("oct03.csv")
+nov03 <- read_csv("nov03.csv")
+dec03 <- read_csv("dec03.csv")
+jan04 <- read_csv("jan04.csv")
+feb04 <- read_csv("feb04.csv")
+mar04 <- read_csv("mar04.csv")
+apr04 <- read_csv("apr04.csv")
+may04 <- read_csv("may04.csv")
+jun04 <- read_csv("jun04.csv")
+jul04 <- read_csv("jul04.csv")
+aug04 <- read_csv("aug04.csv")
+sep04 <- read_csv("sep04.csv")
+ 
+oct04 <- read_csv("oct04.csv")
+nov04 <- read_csv("nov04.csv")
+dec04 <- read_csv("dec04.csv")
+jan05 <- read_csv("jan05.csv")
+feb05 <- read_csv("feb05.csv")
+mar05 <- read_csv("mar05.csv")
+apr05 <- read_csv("apr05.csv")
+may05 <- read_csv("may05.csv")
+jun05 <- read_csv("jun05.csv")
+jul05 <- read_csv("jul05.csv")
+aug05 <- read_csv("aug05.csv")
+sep05 <- read_csv("sep05.csv")
+
+oct05 <- read_csv("oct05.csv")
+nov05 <- read_csv("nov05.csv")
+dec05 <- read_csv("dec05.csv")
+jan06 <- read_csv("jan06.csv")
+feb06 <- read_csv("feb06.csv")
+mar06 <- read_csv("mar06.csv")
+apr06 <- read_csv("apr06.csv")
+may06 <- read_csv("may06.csv")
+jun06 <- read_csv("jun06.csv")
+jul06 <- read_csv("jul06.csv")
+aug06 <- read_csv("aug06.csv")
+sep06 <- read_csv("sep06.csv") 
+
+oct06 <- read_csv("oct06.csv")
+nov06 <- read_csv("nov06.csv")
+dec06 <- read_csv("dec06.csv")
+jan07 <- read_csv("jan07.csv")
+feb07 <- read_csv("feb07.csv")
+mar07 <- read_csv("mar07.csv")
+apr07 <- read_csv("apr07.csv")
+may07 <- read_csv("may07.csv")
+jun07 <- read_csv("jun07.csv")
+jul07 <- read_csv("jul07.csv")
+aug07 <- read_csv("aug07.csv")
+sep07 <- read_csv("sep07.csv")
+
+oct07 <- read_csv("oct07.csv")
+nov07 <- read_csv("nov07.csv")
+dec07 <- read_csv("dec07.csv")
+jan08 <- read_csv("jan08.csv")
+feb08 <- read_csv("feb08.csv")
+mar08 <- read_csv("mar08.csv")
+apr08 <- read_csv("apr08.csv")
+may08 <- read_csv("may08.csv")
+jun08 <- read_csv("jun08.csv")
+jul08 <- read_csv("jul08.csv")
+aug08 <- read_csv("aug08.csv")
+sep08 <- read_csv("sep08.csv")
+
+oct08 <- read_csv("oct08.csv")
+nov08 <- read_csv("nov08.csv")
+dec08 <- read_csv("dec08.csv")
+jan09 <- read_csv("jan09.csv")
+feb09 <- read_csv("feb09.csv")
+mar09 <- read_csv("mar09.csv")
+apr09 <- read_csv("apr09.csv")
+may09 <- read_csv("may09.csv")
+jun09 <- read_csv("jun09.csv")
+jul09 <- read_csv("jul09.csv")
+aug09 <- read_csv("aug09.csv")
+sep09 <- read_csv("sep09.csv")
+
+oct09 <- read_csv("oct09.csv")
+nov09 <- read_csv("nov09.csv")
+dec09 <- read_csv("dec09.csv")
+jan10 <- read_csv("jan10.csv")
+feb10 <- read_csv("feb10.csv")
+mar10 <- read_csv("mar10.csv")
+apr10 <- read_csv("apr10.csv")
+may10 <- read_csv("may10.csv")
+jun10 <- read_csv("jun10.csv")
+jul10 <- read_csv("jul10.csv")
+aug10 <- read_csv("aug10.csv")
+sep10 <- read_csv("sep10.csv")
+
+oct10 <- read_csv("oct10.csv")
+nov10 <- read_csv("nov10.csv")
+dec10 <- read_csv("dec10.csv")
+jan11 <- read_csv("jan11.csv")
+feb11 <- read_csv("feb11.csv")
+mar11 <- read_csv("mar11.csv")
+apr11 <- read_csv("apr11.csv")
+may11 <- read_csv("may11.csv")
+jun11 <- read_csv("jun11.csv")
+jul11 <- read_csv("jul11.csv")
+aug11 <- read_csv("aug11.csv")
+sep11 <- read_csv("sep11.csv")
+ 
+oct11 <- read_csv("oct11.csv")
+nov11 <- read_csv("nov11.csv")
+dec11 <- read_csv("dec11.csv")
+jan12 <- read_csv("jan12.csv")
+feb12 <- read_csv("feb12.csv")
+mar12 <- read_csv("mar12.csv")
+apr12 <- read_csv("apr12.csv")
+may12 <- read_csv("may12.csv") 
+jun12 <- read_csv("jun12.csv")
+jul12 <- read_csv("jul12.csv")
+aug12 <- read_csv("aug12.csv")
+sep12 <- read_csv("sep12.csv")
+
+oct12 <- read_csv("oct12.csv")
+nov12 <- read_csv("nov12.csv")
+dec12 <- read_csv("dec12.csv")
+jan13 <- read_csv("jan13.csv")
+feb13 <- read_csv("feb13.csv")
+mar13 <- read_csv("mar13.csv")
+apr13 <- read_csv("apr13.csv")
+may13 <- read_csv("may13.csv")
+jun13 <- read_csv("jun13.csv")
+jul13 <- read_csv("jul13.csv")
+aug13 <- read_csv("aug13.csv")
+sep13 <- read_csv("sep13.csv")
+ 
+oct13 <- read_csv("oct13.csv") 
+nov13 <- read_csv("nov13.csv")
+dec13 <- read_csv("dec13.csv")
+jan14 <- read_csv("jan14.csv")
+feb14 <- read_csv("feb14.csv")
+mar14 <- read_csv("mar14.csv")
+apr14 <- read_csv("apr14.csv")
+may14 <- read_csv("may14.csv")
+jun14 <- read_csv("jun14.csv")
+jul14 <- read_csv("jul14.csv")
+aug14 <- read_csv("aug14.csv")
+sep14 <- read_csv("sep14.csv")
+
+oct14 <- read_csv("oct14.csv")
+nov14 <- read_csv("nov14.csv")
+dec14 <- read_csv("dec14.csv")
+jan15 <- read_csv("jan15.csv")
+feb15 <- read_csv("feb15.csv")
+mar15 <- read_csv("mar15.csv")
+apr15 <- read_csv("apr15.csv")
+may15 <- read_csv("may15.csv")
+jun15 <- read_csv("jun15.csv")
+jul15 <- read_csv("jul15.csv")
+aug15 <- read_csv("aug15.csv")
+sep15 <- read_csv("sep15.csv")
+
+oct15 <- read_csv("oct15.csv")
+nov15 <- read_csv("nov15.csv")
+dec15 <- read_csv("dec15.csv")
+jan16 <- read_csv("jan16.csv")
+feb16 <- read_csv("feb16.csv")
+mar16 <- read_csv("mar16.csv")
+apr16 <- read_csv("apr16.csv")
+may16 <- read_csv("may16.csv")
+jun16 <- read_csv("jun16.csv")
+jul16 <- read_csv("jul16.csv")
+aug16 <- read_csv("aug16.csv")
+sep16 <- read_csv("sep16.csv")
+
+oct96lga <- subset(oct96, oct96$ORIGIN=="LGA")
+oct96jfk <- subset (oct96, oct96$ORIGIN=="JFK")
+oct96ewr <- subset (oct96, oct96$ORIGIN=="EWR")
+
+# Easier to do this with numbers. LGA's origin airport ID is 12953. JFK's is 12478. EWR's is 11618. 
+
+oct96nyc <- subset(oct96, oct96$ORIGIN_AIRPORT_ID==12953 | oct96$ORIGIN_AIRPORT_ID==12478 | oct96$ORIGIN_AIRPORT_ID==11618)
+oct97nyc <- subset(oct97, oct97$ORIGIN_AIRPORT_ID==12953 | oct97$ORIGIN_AIRPORT_ID==12478 | oct97$ORIGIN_AIRPORT_ID==11618)
+oct98nyc <- subset(oct98, oct98$ORIGIN_AIRPORT_ID==12953 | oct98$ORIGIN_AIRPORT_ID==12478 | oct98$ORIGIN_AIRPORT_ID==11618)
+oct99nyc <- subset(oct99, oct99$ORIGIN_AIRPORT_ID==12953 | oct99$ORIGIN_AIRPORT_ID==12478 | oct99$ORIGIN_AIRPORT_ID==11618)
+oct00nyc <- subset(oct00, oct00$ORIGIN_AIRPORT_ID==12953 | oct00$ORIGIN_AIRPORT_ID==12478 | oct00$ORIGIN_AIRPORT_ID==11618)
+oct01nyc <- subset(oct01, oct01$ORIGIN_AIRPORT_ID==12953 | oct01$ORIGIN_AIRPORT_ID==12478 | oct01$ORIGIN_AIRPORT_ID==11618)
+oct02nyc <- subset(oct02, oct02$ORIGIN_AIRPORT_ID==12953 | oct02$ORIGIN_AIRPORT_ID==12478 | oct02$ORIGIN_AIRPORT_ID==11618)
+oct03nyc <- subset(oct03, oct03$ORIGIN_AIRPORT_ID==12953 | oct03$ORIGIN_AIRPORT_ID==12478 | oct03$ORIGIN_AIRPORT_ID==11618)
+oct04nyc <- subset(oct04, oct04$ORIGIN_AIRPORT_ID==12953 | oct04$ORIGIN_AIRPORT_ID==12478 | oct04$ORIGIN_AIRPORT_ID==11618)
+oct05nyc <- subset(oct05, oct05$ORIGIN_AIRPORT_ID==12953 | oct05$ORIGIN_AIRPORT_ID==12478 | oct05$ORIGIN_AIRPORT_ID==11618)
+oct06nyc <- subset(oct06, oct06$ORIGIN_AIRPORT_ID==12953 | oct06$ORIGIN_AIRPORT_ID==12478 | oct06$ORIGIN_AIRPORT_ID==11618)
+oct07nyc <- subset(oct07, oct07$ORIGIN_AIRPORT_ID==12953 | oct07$ORIGIN_AIRPORT_ID==12478 | oct07$ORIGIN_AIRPORT_ID==11618)
+oct08nyc <- subset(oct08, oct08$ORIGIN_AIRPORT_ID==12953 | oct08$ORIGIN_AIRPORT_ID==12478 | oct08$ORIGIN_AIRPORT_ID==11618)
+oct09nyc <- subset(oct09, oct09$ORIGIN_AIRPORT_ID==12953 | oct09$ORIGIN_AIRPORT_ID==12478 | oct09$ORIGIN_AIRPORT_ID==11618)
+oct10nyc <- subset(oct10, oct10$ORIGIN_AIRPORT_ID==12953 | oct10$ORIGIN_AIRPORT_ID==12478 | oct10$ORIGIN_AIRPORT_ID==11618)
+oct11nyc <- subset(oct11, oct11$ORIGIN_AIRPORT_ID==12953 | oct11$ORIGIN_AIRPORT_ID==12478 | oct11$ORIGIN_AIRPORT_ID==11618)
+oct12nyc <- subset(oct12, oct12$ORIGIN_AIRPORT_ID==12953 | oct12$ORIGIN_AIRPORT_ID==12478 | oct12$ORIGIN_AIRPORT_ID==11618)
+oct13nyc <- subset(oct13, oct13$ORIGIN_AIRPORT_ID==12953 | oct13$ORIGIN_AIRPORT_ID==12478 | oct13$ORIGIN_AIRPORT_ID==11618)
+oct14nyc <- subset(oct14, oct14$ORIGIN_AIRPORT_ID==12953 | oct14$ORIGIN_AIRPORT_ID==12478 | oct14$ORIGIN_AIRPORT_ID==11618)
+oct15nyc <- subset(oct15, oct15$ORIGIN_AIRPORT_ID==12953 | oct15$ORIGIN_AIRPORT_ID==12478 | oct15$ORIGIN_AIRPORT_ID==11618)
+
+nov96nyc <- subset(nov96, nov96$ORIGIN_AIRPORT_ID==12953 | nov96$ORIGIN_AIRPORT_ID==12478 | nov96$ORIGIN_AIRPORT_ID==11618)
+nov97nyc <- subset(nov97, nov97$ORIGIN_AIRPORT_ID==12953 | nov97$ORIGIN_AIRPORT_ID==12478 | nov97$ORIGIN_AIRPORT_ID==11618)
+nov98nyc <- subset(nov98, nov98$ORIGIN_AIRPORT_ID==12953 | nov98$ORIGIN_AIRPORT_ID==12478 | nov98$ORIGIN_AIRPORT_ID==11618)
+nov99nyc <- subset(nov99, nov99$ORIGIN_AIRPORT_ID==12953 | nov99$ORIGIN_AIRPORT_ID==12478 | nov99$ORIGIN_AIRPORT_ID==11618)
+nov00nyc <- subset(nov00, nov00$ORIGIN_AIRPORT_ID==12953 | nov00$ORIGIN_AIRPORT_ID==12478 | nov00$ORIGIN_AIRPORT_ID==11618)
+nov01nyc <- subset(nov01, nov01$ORIGIN_AIRPORT_ID==12953 | nov01$ORIGIN_AIRPORT_ID==12478 | nov01$ORIGIN_AIRPORT_ID==11618)
+nov02nyc <- subset(nov02, nov02$ORIGIN_AIRPORT_ID==12953 | nov02$ORIGIN_AIRPORT_ID==12478 | nov02$ORIGIN_AIRPORT_ID==11618)
+nov03nyc <- subset(nov03, nov03$ORIGIN_AIRPORT_ID==12953 | nov03$ORIGIN_AIRPORT_ID==12478 | nov03$ORIGIN_AIRPORT_ID==11618)
+nov04nyc <- subset(nov04, nov04$ORIGIN_AIRPORT_ID==12953 | nov04$ORIGIN_AIRPORT_ID==12478 | nov04$ORIGIN_AIRPORT_ID==11618)
+nov05nyc <- subset(nov05, nov05$ORIGIN_AIRPORT_ID==12953 | nov05$ORIGIN_AIRPORT_ID==12478 | nov05$ORIGIN_AIRPORT_ID==11618)
+nov06nyc <- subset(nov06, nov06$ORIGIN_AIRPORT_ID==12953 | nov06$ORIGIN_AIRPORT_ID==12478 | nov06$ORIGIN_AIRPORT_ID==11618)
+nov07nyc <- subset(nov07, nov07$ORIGIN_AIRPORT_ID==12953 | nov07$ORIGIN_AIRPORT_ID==12478 | nov07$ORIGIN_AIRPORT_ID==11618)
+nov08nyc <- subset(nov08, nov08$ORIGIN_AIRPORT_ID==12953 | nov08$ORIGIN_AIRPORT_ID==12478 | nov08$ORIGIN_AIRPORT_ID==11618)
+nov09nyc <- subset(nov09, nov09$ORIGIN_AIRPORT_ID==12953 | nov09$ORIGIN_AIRPORT_ID==12478 | nov09$ORIGIN_AIRPORT_ID==11618)
+nov10nyc <- subset(nov10, nov10$ORIGIN_AIRPORT_ID==12953 | nov10$ORIGIN_AIRPORT_ID==12478 | nov10$ORIGIN_AIRPORT_ID==11618)
+nov11nyc <- subset(nov11, nov11$ORIGIN_AIRPORT_ID==12953 | nov11$ORIGIN_AIRPORT_ID==12478 | nov11$ORIGIN_AIRPORT_ID==11618)
+nov12nyc <- subset(nov12, nov12$ORIGIN_AIRPORT_ID==12953 | nov12$ORIGIN_AIRPORT_ID==12478 | nov12$ORIGIN_AIRPORT_ID==11618)
+nov13nyc <- subset(nov13, nov13$ORIGIN_AIRPORT_ID==12953 | nov13$ORIGIN_AIRPORT_ID==12478 | nov13$ORIGIN_AIRPORT_ID==11618)
+nov14nyc <- subset(nov14, nov14$ORIGIN_AIRPORT_ID==12953 | nov14$ORIGIN_AIRPORT_ID==12478 | nov14$ORIGIN_AIRPORT_ID==11618)
+nov15nyc <- subset(nov15, nov15$ORIGIN_AIRPORT_ID==12953 | nov15$ORIGIN_AIRPORT_ID==12478 | nov15$ORIGIN_AIRPORT_ID==11618)
+
+dec96nyc <- subset(dec96, dec96$ORIGIN_AIRPORT_ID==12953 | dec96$ORIGIN_AIRPORT_ID==12478 | dec96$ORIGIN_AIRPORT_ID==11618)
+dec97nyc <- subset(dec97, dec97$ORIGIN_AIRPORT_ID==12953 | dec97$ORIGIN_AIRPORT_ID==12478 | dec97$ORIGIN_AIRPORT_ID==11618)
+dec98nyc <- subset(dec98, dec98$ORIGIN_AIRPORT_ID==12953 | dec98$ORIGIN_AIRPORT_ID==12478 | dec98$ORIGIN_AIRPORT_ID==11618)
+dec99nyc <- subset(dec99, dec99$ORIGIN_AIRPORT_ID==12953 | dec99$ORIGIN_AIRPORT_ID==12478 | dec99$ORIGIN_AIRPORT_ID==11618)
+dec00nyc <- subset(dec00, dec00$ORIGIN_AIRPORT_ID==12953 | dec00$ORIGIN_AIRPORT_ID==12478 | dec00$ORIGIN_AIRPORT_ID==11618)
+dec01nyc <- subset(dec01, dec01$ORIGIN_AIRPORT_ID==12953 | dec01$ORIGIN_AIRPORT_ID==12478 | dec01$ORIGIN_AIRPORT_ID==11618)
+dec02nyc <- subset(dec02, dec02$ORIGIN_AIRPORT_ID==12953 | dec02$ORIGIN_AIRPORT_ID==12478 | dec02$ORIGIN_AIRPORT_ID==11618)
+dec03nyc <- subset(dec03, dec03$ORIGIN_AIRPORT_ID==12953 | dec03$ORIGIN_AIRPORT_ID==12478 | dec03$ORIGIN_AIRPORT_ID==11618)
+dec04nyc <- subset(dec04, dec04$ORIGIN_AIRPORT_ID==12953 | dec04$ORIGIN_AIRPORT_ID==12478 | dec04$ORIGIN_AIRPORT_ID==11618)
+dec05nyc <- subset(dec05, dec05$ORIGIN_AIRPORT_ID==12953 | dec05$ORIGIN_AIRPORT_ID==12478 | dec05$ORIGIN_AIRPORT_ID==11618)
+dec06nyc <- subset(dec06, dec06$ORIGIN_AIRPORT_ID==12953 | dec06$ORIGIN_AIRPORT_ID==12478 | dec06$ORIGIN_AIRPORT_ID==11618)
+dec07nyc <- subset(dec07, dec07$ORIGIN_AIRPORT_ID==12953 | dec07$ORIGIN_AIRPORT_ID==12478 | dec07$ORIGIN_AIRPORT_ID==11618)
+dec08nyc <- subset(dec08, dec08$ORIGIN_AIRPORT_ID==12953 | dec08$ORIGIN_AIRPORT_ID==12478 | dec08$ORIGIN_AIRPORT_ID==11618)
+dec09nyc <- subset(dec09, dec09$ORIGIN_AIRPORT_ID==12953 | dec09$ORIGIN_AIRPORT_ID==12478 | dec09$ORIGIN_AIRPORT_ID==11618)
+dec10nyc <- subset(dec10, dec10$ORIGIN_AIRPORT_ID==12953 | dec10$ORIGIN_AIRPORT_ID==12478 | dec10$ORIGIN_AIRPORT_ID==11618)
+dec11nyc <- subset(dec11, dec11$ORIGIN_AIRPORT_ID==12953 | dec11$ORIGIN_AIRPORT_ID==12478 | dec11$ORIGIN_AIRPORT_ID==11618)
+dec12nyc <- subset(dec12, dec12$ORIGIN_AIRPORT_ID==12953 | dec12$ORIGIN_AIRPORT_ID==12478 | dec12$ORIGIN_AIRPORT_ID==11618)
+dec13nyc <- subset(dec13, dec13$ORIGIN_AIRPORT_ID==12953 | dec13$ORIGIN_AIRPORT_ID==12478 | dec13$ORIGIN_AIRPORT_ID==11618)
+dec14nyc <- subset(dec14, dec14$ORIGIN_AIRPORT_ID==12953 | dec14$ORIGIN_AIRPORT_ID==12478 | dec14$ORIGIN_AIRPORT_ID==11618)
+dec15nyc <- subset(dec15, dec15$ORIGIN_AIRPORT_ID==12953 | dec15$ORIGIN_AIRPORT_ID==12478 | dec15$ORIGIN_AIRPORT_ID==11618)
+
+jan97nyc <- subset(jan97, jan97$ORIGIN_AIRPORT_ID==12953 | jan97$ORIGIN_AIRPORT_ID==12478 | jan97$ORIGIN_AIRPORT_ID==11618)
+jan98nyc <- subset(jan98, jan98$ORIGIN_AIRPORT_ID==12953 | jan98$ORIGIN_AIRPORT_ID==12478 | jan98$ORIGIN_AIRPORT_ID==11618)
+jan99nyc <- subset(jan99, jan99$ORIGIN_AIRPORT_ID==12953 | jan99$ORIGIN_AIRPORT_ID==12478 | jan99$ORIGIN_AIRPORT_ID==11618)
+jan00nyc <- subset(jan00, jan00$ORIGIN_AIRPORT_ID==12953 | jan00$ORIGIN_AIRPORT_ID==12478 | jan00$ORIGIN_AIRPORT_ID==11618)
+jan01nyc <- subset(jan01, jan01$ORIGIN_AIRPORT_ID==12953 | jan01$ORIGIN_AIRPORT_ID==12478 | jan01$ORIGIN_AIRPORT_ID==11618)
+jan02nyc <- subset(jan02, jan02$ORIGIN_AIRPORT_ID==12953 | jan02$ORIGIN_AIRPORT_ID==12478 | jan02$ORIGIN_AIRPORT_ID==11618)
+jan03nyc <- subset(jan03, jan03$ORIGIN_AIRPORT_ID==12953 | jan03$ORIGIN_AIRPORT_ID==12478 | jan03$ORIGIN_AIRPORT_ID==11618)
+jan04nyc <- subset(jan04, jan04$ORIGIN_AIRPORT_ID==12953 | jan04$ORIGIN_AIRPORT_ID==12478 | jan04$ORIGIN_AIRPORT_ID==11618)
+jan05nyc <- subset(jan05, jan05$ORIGIN_AIRPORT_ID==12953 | jan05$ORIGIN_AIRPORT_ID==12478 | jan05$ORIGIN_AIRPORT_ID==11618)
+jan06nyc <- subset(jan06, jan06$ORIGIN_AIRPORT_ID==12953 | jan06$ORIGIN_AIRPORT_ID==12478 | jan06$ORIGIN_AIRPORT_ID==11618)
+jan07nyc <- subset(jan07, jan07$ORIGIN_AIRPORT_ID==12953 | jan07$ORIGIN_AIRPORT_ID==12478 | jan07$ORIGIN_AIRPORT_ID==11618)
+jan08nyc <- subset(jan08, jan08$ORIGIN_AIRPORT_ID==12953 | jan08$ORIGIN_AIRPORT_ID==12478 | jan08$ORIGIN_AIRPORT_ID==11618)
+jan09nyc <- subset(jan09, jan09$ORIGIN_AIRPORT_ID==12953 | jan09$ORIGIN_AIRPORT_ID==12478 | jan09$ORIGIN_AIRPORT_ID==11618)
+jan10nyc <- subset(jan10, jan10$ORIGIN_AIRPORT_ID==12953 | jan10$ORIGIN_AIRPORT_ID==12478 | jan10$ORIGIN_AIRPORT_ID==11618)
+jan11nyc <- subset(jan11, jan11$ORIGIN_AIRPORT_ID==12953 | jan11$ORIGIN_AIRPORT_ID==12478 | jan11$ORIGIN_AIRPORT_ID==11618)
+jan12nyc <- subset(jan12, jan12$ORIGIN_AIRPORT_ID==12953 | jan12$ORIGIN_AIRPORT_ID==12478 | jan12$ORIGIN_AIRPORT_ID==11618)
+jan13nyc <- subset(jan13, jan13$ORIGIN_AIRPORT_ID==12953 | jan13$ORIGIN_AIRPORT_ID==12478 | jan13$ORIGIN_AIRPORT_ID==11618)
+jan14nyc <- subset(jan14, jan14$ORIGIN_AIRPORT_ID==12953 | jan14$ORIGIN_AIRPORT_ID==12478 | jan14$ORIGIN_AIRPORT_ID==11618)
+jan15nyc <- subset(jan15, jan15$ORIGIN_AIRPORT_ID==12953 | jan15$ORIGIN_AIRPORT_ID==12478 | jan15$ORIGIN_AIRPORT_ID==11618)
+jan16nyc <- subset(jan16, jan16$ORIGIN_AIRPORT_ID==12953 | jan16$ORIGIN_AIRPORT_ID==12478 | jan16$ORIGIN_AIRPORT_ID==11618)
+
+
+feb97nyc <- subset(feb97, feb97$ORIGIN_AIRPORT_ID==12953 | feb97$ORIGIN_AIRPORT_ID==12478 | feb97$ORIGIN_AIRPORT_ID==11618)
+feb98nyc <- subset(feb98, feb98$ORIGIN_AIRPORT_ID==12953 | feb98$ORIGIN_AIRPORT_ID==12478 | feb98$ORIGIN_AIRPORT_ID==11618)
+feb99nyc <- subset(feb99, feb99$ORIGIN_AIRPORT_ID==12953 | feb99$ORIGIN_AIRPORT_ID==12478 | feb99$ORIGIN_AIRPORT_ID==11618)
+feb00nyc <- subset(feb00, feb00$ORIGIN_AIRPORT_ID==12953 | feb00$ORIGIN_AIRPORT_ID==12478 | feb00$ORIGIN_AIRPORT_ID==11618)
+feb01nyc <- subset(feb01, feb01$ORIGIN_AIRPORT_ID==12953 | feb01$ORIGIN_AIRPORT_ID==12478 | feb01$ORIGIN_AIRPORT_ID==11618)
+feb02nyc <- subset(feb02, feb02$ORIGIN_AIRPORT_ID==12953 | feb02$ORIGIN_AIRPORT_ID==12478 | feb02$ORIGIN_AIRPORT_ID==11618)
+feb03nyc <- subset(feb03, feb03$ORIGIN_AIRPORT_ID==12953 | feb03$ORIGIN_AIRPORT_ID==12478 | feb03$ORIGIN_AIRPORT_ID==11618)
+feb04nyc <- subset(feb04, feb04$ORIGIN_AIRPORT_ID==12953 | feb04$ORIGIN_AIRPORT_ID==12478 | feb04$ORIGIN_AIRPORT_ID==11618)
+feb05nyc <- subset(feb05, feb05$ORIGIN_AIRPORT_ID==12953 | feb05$ORIGIN_AIRPORT_ID==12478 | feb05$ORIGIN_AIRPORT_ID==11618)
+feb06nyc <- subset(feb06, feb06$ORIGIN_AIRPORT_ID==12953 | feb06$ORIGIN_AIRPORT_ID==12478 | feb06$ORIGIN_AIRPORT_ID==11618)
+feb07nyc <- subset(feb07, feb07$ORIGIN_AIRPORT_ID==12953 | feb07$ORIGIN_AIRPORT_ID==12478 | feb07$ORIGIN_AIRPORT_ID==11618)
+feb08nyc <- subset(feb08, feb08$ORIGIN_AIRPORT_ID==12953 | feb08$ORIGIN_AIRPORT_ID==12478 | feb08$ORIGIN_AIRPORT_ID==11618)
+feb09nyc <- subset(feb09, feb09$ORIGIN_AIRPORT_ID==12953 | feb09$ORIGIN_AIRPORT_ID==12478 | feb09$ORIGIN_AIRPORT_ID==11618)
+feb10nyc <- subset(feb10, feb10$ORIGIN_AIRPORT_ID==12953 | feb10$ORIGIN_AIRPORT_ID==12478 | feb10$ORIGIN_AIRPORT_ID==11618)
+feb11nyc <- subset(feb11, feb11$ORIGIN_AIRPORT_ID==12953 | feb11$ORIGIN_AIRPORT_ID==12478 | feb11$ORIGIN_AIRPORT_ID==11618)
+feb12nyc <- subset(feb12, feb12$ORIGIN_AIRPORT_ID==12953 | feb12$ORIGIN_AIRPORT_ID==12478 | feb12$ORIGIN_AIRPORT_ID==11618)
+feb13nyc <- subset(feb13, feb13$ORIGIN_AIRPORT_ID==12953 | feb13$ORIGIN_AIRPORT_ID==12478 | feb13$ORIGIN_AIRPORT_ID==11618)
+feb14nyc <- subset(feb14, feb14$ORIGIN_AIRPORT_ID==12953 | feb14$ORIGIN_AIRPORT_ID==12478 | feb14$ORIGIN_AIRPORT_ID==11618)
+feb15nyc <- subset(feb15, feb15$ORIGIN_AIRPORT_ID==12953 | feb15$ORIGIN_AIRPORT_ID==12478 | feb15$ORIGIN_AIRPORT_ID==11618)
+feb16nyc <- subset(feb16, feb16$ORIGIN_AIRPORT_ID==12953 | feb16$ORIGIN_AIRPORT_ID==12478 | feb16$ORIGIN_AIRPORT_ID==11618)
+
+mar97nyc <- subset(mar97, mar97$ORIGIN_AIRPORT_ID==12953 | mar97$ORIGIN_AIRPORT_ID==12478 | mar97$ORIGIN_AIRPORT_ID==11618)
+mar98nyc <- subset(mar98, mar98$ORIGIN_AIRPORT_ID==12953 | mar98$ORIGIN_AIRPORT_ID==12478 | mar98$ORIGIN_AIRPORT_ID==11618)
+mar99nyc <- subset(mar99, mar99$ORIGIN_AIRPORT_ID==12953 | mar99$ORIGIN_AIRPORT_ID==12478 | mar99$ORIGIN_AIRPORT_ID==11618)
+mar00nyc <- subset(mar00, mar00$ORIGIN_AIRPORT_ID==12953 | mar00$ORIGIN_AIRPORT_ID==12478 | mar00$ORIGIN_AIRPORT_ID==11618)
+mar01nyc <- subset(mar01, mar01$ORIGIN_AIRPORT_ID==12953 | mar01$ORIGIN_AIRPORT_ID==12478 | mar01$ORIGIN_AIRPORT_ID==11618)
+mar02nyc <- subset(mar02, mar02$ORIGIN_AIRPORT_ID==12953 | mar02$ORIGIN_AIRPORT_ID==12478 | mar02$ORIGIN_AIRPORT_ID==11618)
+mar03nyc <- subset(mar03, mar03$ORIGIN_AIRPORT_ID==12953 | mar03$ORIGIN_AIRPORT_ID==12478 | mar03$ORIGIN_AIRPORT_ID==11618)
+mar04nyc <- subset(mar04, mar04$ORIGIN_AIRPORT_ID==12953 | mar04$ORIGIN_AIRPORT_ID==12478 | mar04$ORIGIN_AIRPORT_ID==11618)
+mar05nyc <- subset(mar05, mar05$ORIGIN_AIRPORT_ID==12953 | mar05$ORIGIN_AIRPORT_ID==12478 | mar05$ORIGIN_AIRPORT_ID==11618)
+mar06nyc <- subset(mar06, mar06$ORIGIN_AIRPORT_ID==12953 | mar06$ORIGIN_AIRPORT_ID==12478 | mar06$ORIGIN_AIRPORT_ID==11618)
+mar07nyc <- subset(mar07, mar07$ORIGIN_AIRPORT_ID==12953 | mar07$ORIGIN_AIRPORT_ID==12478 | mar07$ORIGIN_AIRPORT_ID==11618)
+mar08nyc <- subset(mar08, mar08$ORIGIN_AIRPORT_ID==12953 | mar08$ORIGIN_AIRPORT_ID==12478 | mar08$ORIGIN_AIRPORT_ID==11618)
+mar09nyc <- subset(mar09, mar09$ORIGIN_AIRPORT_ID==12953 | mar09$ORIGIN_AIRPORT_ID==12478 | mar09$ORIGIN_AIRPORT_ID==11618)
+mar10nyc <- subset(mar10, mar10$ORIGIN_AIRPORT_ID==12953 | mar10$ORIGIN_AIRPORT_ID==12478 | mar10$ORIGIN_AIRPORT_ID==11618)
+mar11nyc <- subset(mar11, mar11$ORIGIN_AIRPORT_ID==12953 | mar11$ORIGIN_AIRPORT_ID==12478 | mar11$ORIGIN_AIRPORT_ID==11618)
+mar12nyc <- subset(mar12, mar12$ORIGIN_AIRPORT_ID==12953 | mar12$ORIGIN_AIRPORT_ID==12478 | mar12$ORIGIN_AIRPORT_ID==11618)
+mar13nyc <- subset(mar13, mar13$ORIGIN_AIRPORT_ID==12953 | mar13$ORIGIN_AIRPORT_ID==12478 | mar13$ORIGIN_AIRPORT_ID==11618)
+mar14nyc <- subset(mar14, mar14$ORIGIN_AIRPORT_ID==12953 | mar14$ORIGIN_AIRPORT_ID==12478 | mar14$ORIGIN_AIRPORT_ID==11618)
+mar15nyc <- subset(mar15, mar15$ORIGIN_AIRPORT_ID==12953 | mar15$ORIGIN_AIRPORT_ID==12478 | mar15$ORIGIN_AIRPORT_ID==11618)
+mar16nyc <- subset(mar16, mar16$ORIGIN_AIRPORT_ID==12953 | mar16$ORIGIN_AIRPORT_ID==12478 | mar16$ORIGIN_AIRPORT_ID==11618)
+
+apr97nyc <- subset(apr97, apr97$ORIGIN_AIRPORT_ID==12953 | apr97$ORIGIN_AIRPORT_ID==12478 | apr97$ORIGIN_AIRPORT_ID==11618)
+apr98nyc <- subset(apr98, apr98$ORIGIN_AIRPORT_ID==12953 | apr98$ORIGIN_AIRPORT_ID==12478 | apr98$ORIGIN_AIRPORT_ID==11618)
+apr99nyc <- subset(apr99, apr99$ORIGIN_AIRPORT_ID==12953 | apr99$ORIGIN_AIRPORT_ID==12478 | apr99$ORIGIN_AIRPORT_ID==11618)
+apr00nyc <- subset(apr00, apr00$ORIGIN_AIRPORT_ID==12953 | apr00$ORIGIN_AIRPORT_ID==12478 | apr00$ORIGIN_AIRPORT_ID==11618)
+apr01nyc <- subset(apr01, apr01$ORIGIN_AIRPORT_ID==12953 | apr01$ORIGIN_AIRPORT_ID==12478 | apr01$ORIGIN_AIRPORT_ID==11618)
+apr02nyc <- subset(apr02, apr02$ORIGIN_AIRPORT_ID==12953 | apr02$ORIGIN_AIRPORT_ID==12478 | apr02$ORIGIN_AIRPORT_ID==11618)
+apr03nyc <- subset(apr03, apr03$ORIGIN_AIRPORT_ID==12953 | apr03$ORIGIN_AIRPORT_ID==12478 | apr03$ORIGIN_AIRPORT_ID==11618)
+apr04nyc <- subset(apr04, apr04$ORIGIN_AIRPORT_ID==12953 | apr04$ORIGIN_AIRPORT_ID==12478 | apr04$ORIGIN_AIRPORT_ID==11618)
+apr05nyc <- subset(apr05, apr05$ORIGIN_AIRPORT_ID==12953 | apr05$ORIGIN_AIRPORT_ID==12478 | apr05$ORIGIN_AIRPORT_ID==11618)
+apr06nyc <- subset(apr06, apr06$ORIGIN_AIRPORT_ID==12953 | apr06$ORIGIN_AIRPORT_ID==12478 | apr06$ORIGIN_AIRPORT_ID==11618)
+apr07nyc <- subset(apr07, apr07$ORIGIN_AIRPORT_ID==12953 | apr07$ORIGIN_AIRPORT_ID==12478 | apr07$ORIGIN_AIRPORT_ID==11618)
+apr08nyc <- subset(apr08, apr08$ORIGIN_AIRPORT_ID==12953 | apr08$ORIGIN_AIRPORT_ID==12478 | apr08$ORIGIN_AIRPORT_ID==11618)
+apr09nyc <- subset(apr09, apr09$ORIGIN_AIRPORT_ID==12953 | apr09$ORIGIN_AIRPORT_ID==12478 | apr09$ORIGIN_AIRPORT_ID==11618)
+apr10nyc <- subset(apr10, apr10$ORIGIN_AIRPORT_ID==12953 | apr10$ORIGIN_AIRPORT_ID==12478 | apr10$ORIGIN_AIRPORT_ID==11618)
+apr11nyc <- subset(apr11, apr11$ORIGIN_AIRPORT_ID==12953 | apr11$ORIGIN_AIRPORT_ID==12478 | apr11$ORIGIN_AIRPORT_ID==11618)
+apr12nyc <- subset(apr12, apr12$ORIGIN_AIRPORT_ID==12953 | apr12$ORIGIN_AIRPORT_ID==12478 | apr12$ORIGIN_AIRPORT_ID==11618)
+apr13nyc <- subset(apr13, apr13$ORIGIN_AIRPORT_ID==12953 | apr13$ORIGIN_AIRPORT_ID==12478 | apr13$ORIGIN_AIRPORT_ID==11618)
+apr14nyc <- subset(apr14, apr14$ORIGIN_AIRPORT_ID==12953 | apr14$ORIGIN_AIRPORT_ID==12478 | apr14$ORIGIN_AIRPORT_ID==11618)
+apr15nyc <- subset(apr15, apr15$ORIGIN_AIRPORT_ID==12953 | apr15$ORIGIN_AIRPORT_ID==12478 | apr15$ORIGIN_AIRPORT_ID==11618)
+apr16nyc <- subset(apr16, apr16$ORIGIN_AIRPORT_ID==12953 | apr16$ORIGIN_AIRPORT_ID==12478 | apr16$ORIGIN_AIRPORT_ID==11618)
+
+may97nyc <- subset(may97, may97$ORIGIN_AIRPORT_ID==12953 | may97$ORIGIN_AIRPORT_ID==12478 | may97$ORIGIN_AIRPORT_ID==11618)
+may98nyc <- subset(may98, may98$ORIGIN_AIRPORT_ID==12953 | may98$ORIGIN_AIRPORT_ID==12478 | may98$ORIGIN_AIRPORT_ID==11618)
+may99nyc <- subset(may99, may99$ORIGIN_AIRPORT_ID==12953 | may99$ORIGIN_AIRPORT_ID==12478 | may99$ORIGIN_AIRPORT_ID==11618)
+may00nyc <- subset(may00, may00$ORIGIN_AIRPORT_ID==12953 | may00$ORIGIN_AIRPORT_ID==12478 | may00$ORIGIN_AIRPORT_ID==11618)
+may01nyc <- subset(may01, may01$ORIGIN_AIRPORT_ID==12953 | may01$ORIGIN_AIRPORT_ID==12478 | may01$ORIGIN_AIRPORT_ID==11618)
+may02nyc <- subset(may02, may02$ORIGIN_AIRPORT_ID==12953 | may02$ORIGIN_AIRPORT_ID==12478 | may02$ORIGIN_AIRPORT_ID==11618)
+may03nyc <- subset(may03, may03$ORIGIN_AIRPORT_ID==12953 | may03$ORIGIN_AIRPORT_ID==12478 | may03$ORIGIN_AIRPORT_ID==11618)
+may04nyc <- subset(may04, may04$ORIGIN_AIRPORT_ID==12953 | may04$ORIGIN_AIRPORT_ID==12478 | may04$ORIGIN_AIRPORT_ID==11618)
+may05nyc <- subset(may05, may05$ORIGIN_AIRPORT_ID==12953 | may05$ORIGIN_AIRPORT_ID==12478 | may05$ORIGIN_AIRPORT_ID==11618)
+may06nyc <- subset(may06, may06$ORIGIN_AIRPORT_ID==12953 | may06$ORIGIN_AIRPORT_ID==12478 | may06$ORIGIN_AIRPORT_ID==11618)
+may07nyc <- subset(may07, may07$ORIGIN_AIRPORT_ID==12953 | may07$ORIGIN_AIRPORT_ID==12478 | may07$ORIGIN_AIRPORT_ID==11618)
+may08nyc <- subset(may08, may08$ORIGIN_AIRPORT_ID==12953 | may08$ORIGIN_AIRPORT_ID==12478 | may08$ORIGIN_AIRPORT_ID==11618)
+may09nyc <- subset(may09, may09$ORIGIN_AIRPORT_ID==12953 | may09$ORIGIN_AIRPORT_ID==12478 | may09$ORIGIN_AIRPORT_ID==11618)
+may10nyc <- subset(may10, may10$ORIGIN_AIRPORT_ID==12953 | may10$ORIGIN_AIRPORT_ID==12478 | may10$ORIGIN_AIRPORT_ID==11618)
+may11nyc <- subset(may11, may11$ORIGIN_AIRPORT_ID==12953 | may11$ORIGIN_AIRPORT_ID==12478 | may11$ORIGIN_AIRPORT_ID==11618)
+may12nyc <- subset(may12, may12$ORIGIN_AIRPORT_ID==12953 | may12$ORIGIN_AIRPORT_ID==12478 | may12$ORIGIN_AIRPORT_ID==11618)
+may13nyc <- subset(may13, may13$ORIGIN_AIRPORT_ID==12953 | may13$ORIGIN_AIRPORT_ID==12478 | may13$ORIGIN_AIRPORT_ID==11618)
+may14nyc <- subset(may14, may14$ORIGIN_AIRPORT_ID==12953 | may14$ORIGIN_AIRPORT_ID==12478 | may14$ORIGIN_AIRPORT_ID==11618)
+may15nyc <- subset(may15, may15$ORIGIN_AIRPORT_ID==12953 | may15$ORIGIN_AIRPORT_ID==12478 | may15$ORIGIN_AIRPORT_ID==11618)
+may16nyc <- subset(may16, may16$ORIGIN_AIRPORT_ID==12953 | may16$ORIGIN_AIRPORT_ID==12478 | may16$ORIGIN_AIRPORT_ID==11618)
+
+jun97nyc <- subset(jun97, jun97$ORIGIN_AIRPORT_ID==12953 | jun97$ORIGIN_AIRPORT_ID==12478 | jun97$ORIGIN_AIRPORT_ID==11618)
+jun98nyc <- subset(jun98, jun98$ORIGIN_AIRPORT_ID==12953 | jun98$ORIGIN_AIRPORT_ID==12478 | jun98$ORIGIN_AIRPORT_ID==11618)
+jun99nyc <- subset(jun99, jun99$ORIGIN_AIRPORT_ID==12953 | jun99$ORIGIN_AIRPORT_ID==12478 | jun99$ORIGIN_AIRPORT_ID==11618)
+jun00nyc <- subset(jun00, jun00$ORIGIN_AIRPORT_ID==12953 | jun00$ORIGIN_AIRPORT_ID==12478 | jun00$ORIGIN_AIRPORT_ID==11618)
+jun01nyc <- subset(jun01, jun01$ORIGIN_AIRPORT_ID==12953 | jun01$ORIGIN_AIRPORT_ID==12478 | jun01$ORIGIN_AIRPORT_ID==11618)
+jun02nyc <- subset(jun02, jun02$ORIGIN_AIRPORT_ID==12953 | jun02$ORIGIN_AIRPORT_ID==12478 | jun02$ORIGIN_AIRPORT_ID==11618)
+jun03nyc <- subset(jun03, jun03$ORIGIN_AIRPORT_ID==12953 | jun03$ORIGIN_AIRPORT_ID==12478 | jun03$ORIGIN_AIRPORT_ID==11618)
+jun04nyc <- subset(jun04, jun04$ORIGIN_AIRPORT_ID==12953 | jun04$ORIGIN_AIRPORT_ID==12478 | jun04$ORIGIN_AIRPORT_ID==11618)
+jun05nyc <- subset(jun05, jun05$ORIGIN_AIRPORT_ID==12953 | jun05$ORIGIN_AIRPORT_ID==12478 | jun05$ORIGIN_AIRPORT_ID==11618)
+jun06nyc <- subset(jun06, jun06$ORIGIN_AIRPORT_ID==12953 | jun06$ORIGIN_AIRPORT_ID==12478 | jun06$ORIGIN_AIRPORT_ID==11618)
+jun07nyc <- subset(jun07, jun07$ORIGIN_AIRPORT_ID==12953 | jun07$ORIGIN_AIRPORT_ID==12478 | jun07$ORIGIN_AIRPORT_ID==11618)
+jun08nyc <- subset(jun08, jun08$ORIGIN_AIRPORT_ID==12953 | jun08$ORIGIN_AIRPORT_ID==12478 | jun08$ORIGIN_AIRPORT_ID==11618)
+jun09nyc <- subset(jun09, jun09$ORIGIN_AIRPORT_ID==12953 | jun09$ORIGIN_AIRPORT_ID==12478 | jun09$ORIGIN_AIRPORT_ID==11618)
+jun10nyc <- subset(jun10, jun10$ORIGIN_AIRPORT_ID==12953 | jun10$ORIGIN_AIRPORT_ID==12478 | jun10$ORIGIN_AIRPORT_ID==11618)
+jun11nyc <- subset(jun11, jun11$ORIGIN_AIRPORT_ID==12953 | jun11$ORIGIN_AIRPORT_ID==12478 | jun11$ORIGIN_AIRPORT_ID==11618)
+jun12nyc <- subset(jun12, jun12$ORIGIN_AIRPORT_ID==12953 | jun12$ORIGIN_AIRPORT_ID==12478 | jun12$ORIGIN_AIRPORT_ID==11618)
+jun13nyc <- subset(jun13, jun13$ORIGIN_AIRPORT_ID==12953 | jun13$ORIGIN_AIRPORT_ID==12478 | jun13$ORIGIN_AIRPORT_ID==11618)
+jun14nyc <- subset(jun14, jun14$ORIGIN_AIRPORT_ID==12953 | jun14$ORIGIN_AIRPORT_ID==12478 | jun14$ORIGIN_AIRPORT_ID==11618)
+jun15nyc <- subset(jun15, jun15$ORIGIN_AIRPORT_ID==12953 | jun15$ORIGIN_AIRPORT_ID==12478 | jun15$ORIGIN_AIRPORT_ID==11618)
+jun16nyc <- subset(jun16, jun16$ORIGIN_AIRPORT_ID==12953 | jun16$ORIGIN_AIRPORT_ID==12478 | jun16$ORIGIN_AIRPORT_ID==11618)
+
+jul97nyc <- subset(jul97, jul97$ORIGIN_AIRPORT_ID==12953 | jul97$ORIGIN_AIRPORT_ID==12478 | jul97$ORIGIN_AIRPORT_ID==11618)
+jul98nyc <- subset(jul98, jul98$ORIGIN_AIRPORT_ID==12953 | jul98$ORIGIN_AIRPORT_ID==12478 | jul98$ORIGIN_AIRPORT_ID==11618)
+jul99nyc <- subset(jul99, jul99$ORIGIN_AIRPORT_ID==12953 | jul99$ORIGIN_AIRPORT_ID==12478 | jul99$ORIGIN_AIRPORT_ID==11618)
+jul00nyc <- subset(jul00, jul00$ORIGIN_AIRPORT_ID==12953 | jul00$ORIGIN_AIRPORT_ID==12478 | jul00$ORIGIN_AIRPORT_ID==11618)
+jul01nyc <- subset(jul01, jul01$ORIGIN_AIRPORT_ID==12953 | jul01$ORIGIN_AIRPORT_ID==12478 | jul01$ORIGIN_AIRPORT_ID==11618)
+jul02nyc <- subset(jul02, jul02$ORIGIN_AIRPORT_ID==12953 | jul02$ORIGIN_AIRPORT_ID==12478 | jul02$ORIGIN_AIRPORT_ID==11618)
+jul03nyc <- subset(jul03, jul03$ORIGIN_AIRPORT_ID==12953 | jul03$ORIGIN_AIRPORT_ID==12478 | jul03$ORIGIN_AIRPORT_ID==11618)
+jul04nyc <- subset(jul04, jul04$ORIGIN_AIRPORT_ID==12953 | jul04$ORIGIN_AIRPORT_ID==12478 | jul04$ORIGIN_AIRPORT_ID==11618)
+jul05nyc <- subset(jul05, jul05$ORIGIN_AIRPORT_ID==12953 | jul05$ORIGIN_AIRPORT_ID==12478 | jul05$ORIGIN_AIRPORT_ID==11618)
+jul06nyc <- subset(jul06, jul06$ORIGIN_AIRPORT_ID==12953 | jul06$ORIGIN_AIRPORT_ID==12478 | jul06$ORIGIN_AIRPORT_ID==11618)
+jul07nyc <- subset(jul07, jul07$ORIGIN_AIRPORT_ID==12953 | jul07$ORIGIN_AIRPORT_ID==12478 | jul07$ORIGIN_AIRPORT_ID==11618)
+jul08nyc <- subset(jul08, jul08$ORIGIN_AIRPORT_ID==12953 | jul08$ORIGIN_AIRPORT_ID==12478 | jul08$ORIGIN_AIRPORT_ID==11618)
+jul09nyc <- subset(jul09, jul09$ORIGIN_AIRPORT_ID==12953 | jul09$ORIGIN_AIRPORT_ID==12478 | jul09$ORIGIN_AIRPORT_ID==11618)
+jul10nyc <- subset(jul10, jul10$ORIGIN_AIRPORT_ID==12953 | jul10$ORIGIN_AIRPORT_ID==12478 | jul10$ORIGIN_AIRPORT_ID==11618)
+jul11nyc <- subset(jul11, jul11$ORIGIN_AIRPORT_ID==12953 | jul11$ORIGIN_AIRPORT_ID==12478 | jul11$ORIGIN_AIRPORT_ID==11618)
+jul12nyc <- subset(jul12, jul12$ORIGIN_AIRPORT_ID==12953 | jul12$ORIGIN_AIRPORT_ID==12478 | jul12$ORIGIN_AIRPORT_ID==11618)
+jul13nyc <- subset(jul13, jul13$ORIGIN_AIRPORT_ID==12953 | jul13$ORIGIN_AIRPORT_ID==12478 | jul13$ORIGIN_AIRPORT_ID==11618)
+jul14nyc <- subset(jul14, jul14$ORIGIN_AIRPORT_ID==12953 | jul14$ORIGIN_AIRPORT_ID==12478 | jul14$ORIGIN_AIRPORT_ID==11618)
+jul15nyc <- subset(jul15, jul15$ORIGIN_AIRPORT_ID==12953 | jul15$ORIGIN_AIRPORT_ID==12478 | jul15$ORIGIN_AIRPORT_ID==11618)
+jul16nyc <- subset(jul16, jul16$ORIGIN_AIRPORT_ID==12953 | jul16$ORIGIN_AIRPORT_ID==12478 | jul16$ORIGIN_AIRPORT_ID==11618)
+
+aug97nyc <- subset(aug97, aug97$ORIGIN_AIRPORT_ID==12953 | aug97$ORIGIN_AIRPORT_ID==12478 | aug97$ORIGIN_AIRPORT_ID==11618)
+aug98nyc <- subset(aug98, aug98$ORIGIN_AIRPORT_ID==12953 | aug98$ORIGIN_AIRPORT_ID==12478 | aug98$ORIGIN_AIRPORT_ID==11618)
+aug99nyc <- subset(aug99, aug99$ORIGIN_AIRPORT_ID==12953 | aug99$ORIGIN_AIRPORT_ID==12478 | aug99$ORIGIN_AIRPORT_ID==11618)
+aug00nyc <- subset(aug00, aug00$ORIGIN_AIRPORT_ID==12953 | aug00$ORIGIN_AIRPORT_ID==12478 | aug00$ORIGIN_AIRPORT_ID==11618)
+aug01nyc <- subset(aug01, aug01$ORIGIN_AIRPORT_ID==12953 | aug01$ORIGIN_AIRPORT_ID==12478 | aug01$ORIGIN_AIRPORT_ID==11618)
+aug02nyc <- subset(aug02, aug02$ORIGIN_AIRPORT_ID==12953 | aug02$ORIGIN_AIRPORT_ID==12478 | aug02$ORIGIN_AIRPORT_ID==11618)
+aug03nyc <- subset(aug03, aug03$ORIGIN_AIRPORT_ID==12953 | aug03$ORIGIN_AIRPORT_ID==12478 | aug03$ORIGIN_AIRPORT_ID==11618)
+aug04nyc <- subset(aug04, aug04$ORIGIN_AIRPORT_ID==12953 | aug04$ORIGIN_AIRPORT_ID==12478 | aug04$ORIGIN_AIRPORT_ID==11618)
+aug05nyc <- subset(aug05, aug05$ORIGIN_AIRPORT_ID==12953 | aug05$ORIGIN_AIRPORT_ID==12478 | aug05$ORIGIN_AIRPORT_ID==11618)
+aug06nyc <- subset(aug06, aug06$ORIGIN_AIRPORT_ID==12953 | aug06$ORIGIN_AIRPORT_ID==12478 | aug06$ORIGIN_AIRPORT_ID==11618)
+aug07nyc <- subset(aug07, aug07$ORIGIN_AIRPORT_ID==12953 | aug07$ORIGIN_AIRPORT_ID==12478 | aug07$ORIGIN_AIRPORT_ID==11618)
+aug08nyc <- subset(aug08, aug08$ORIGIN_AIRPORT_ID==12953 | aug08$ORIGIN_AIRPORT_ID==12478 | aug08$ORIGIN_AIRPORT_ID==11618)
+aug09nyc <- subset(aug09, aug09$ORIGIN_AIRPORT_ID==12953 | aug09$ORIGIN_AIRPORT_ID==12478 | aug09$ORIGIN_AIRPORT_ID==11618)
+aug10nyc <- subset(aug10, aug10$ORIGIN_AIRPORT_ID==12953 | aug10$ORIGIN_AIRPORT_ID==12478 | aug10$ORIGIN_AIRPORT_ID==11618)
+aug11nyc <- subset(aug11, aug11$ORIGIN_AIRPORT_ID==12953 | aug11$ORIGIN_AIRPORT_ID==12478 | aug11$ORIGIN_AIRPORT_ID==11618)
+aug12nyc <- subset(aug12, aug12$ORIGIN_AIRPORT_ID==12953 | aug12$ORIGIN_AIRPORT_ID==12478 | aug12$ORIGIN_AIRPORT_ID==11618)
+aug13nyc <- subset(aug13, aug13$ORIGIN_AIRPORT_ID==12953 | aug13$ORIGIN_AIRPORT_ID==12478 | aug13$ORIGIN_AIRPORT_ID==11618)
+aug14nyc <- subset(aug14, aug14$ORIGIN_AIRPORT_ID==12953 | aug14$ORIGIN_AIRPORT_ID==12478 | aug14$ORIGIN_AIRPORT_ID==11618)
+aug15nyc <- subset(aug15, aug15$ORIGIN_AIRPORT_ID==12953 | aug15$ORIGIN_AIRPORT_ID==12478 | aug15$ORIGIN_AIRPORT_ID==11618)
+aug16nyc <- subset(aug16, aug16$ORIGIN_AIRPORT_ID==12953 | aug16$ORIGIN_AIRPORT_ID==12478 | aug16$ORIGIN_AIRPORT_ID==11618)
+
+sep97nyc <- subset(sep97, sep97$ORIGIN_AIRPORT_ID==12953 | sep97$ORIGIN_AIRPORT_ID==12478 | sep97$ORIGIN_AIRPORT_ID==11618)
+sep98nyc <- subset(sep98, sep98$ORIGIN_AIRPORT_ID==12953 | sep98$ORIGIN_AIRPORT_ID==12478 | sep98$ORIGIN_AIRPORT_ID==11618)
+sep99nyc <- subset(sep99, sep99$ORIGIN_AIRPORT_ID==12953 | sep99$ORIGIN_AIRPORT_ID==12478 | sep99$ORIGIN_AIRPORT_ID==11618)
+sep00nyc <- subset(sep00, sep00$ORIGIN_AIRPORT_ID==12953 | sep00$ORIGIN_AIRPORT_ID==12478 | sep00$ORIGIN_AIRPORT_ID==11618)
+sep01nyc <- subset(sep01, sep01$ORIGIN_AIRPORT_ID==12953 | sep01$ORIGIN_AIRPORT_ID==12478 | sep01$ORIGIN_AIRPORT_ID==11618)
+sep02nyc <- subset(sep02, sep02$ORIGIN_AIRPORT_ID==12953 | sep02$ORIGIN_AIRPORT_ID==12478 | sep02$ORIGIN_AIRPORT_ID==11618)
+sep03nyc <- subset(sep03, sep03$ORIGIN_AIRPORT_ID==12953 | sep03$ORIGIN_AIRPORT_ID==12478 | sep03$ORIGIN_AIRPORT_ID==11618)
+sep04nyc <- subset(sep04, sep04$ORIGIN_AIRPORT_ID==12953 | sep04$ORIGIN_AIRPORT_ID==12478 | sep04$ORIGIN_AIRPORT_ID==11618)
+sep05nyc <- subset(sep05, sep05$ORIGIN_AIRPORT_ID==12953 | sep05$ORIGIN_AIRPORT_ID==12478 | sep05$ORIGIN_AIRPORT_ID==11618)
+sep06nyc <- subset(sep06, sep06$ORIGIN_AIRPORT_ID==12953 | sep06$ORIGIN_AIRPORT_ID==12478 | sep06$ORIGIN_AIRPORT_ID==11618)
+sep07nyc <- subset(sep07, sep07$ORIGIN_AIRPORT_ID==12953 | sep07$ORIGIN_AIRPORT_ID==12478 | sep07$ORIGIN_AIRPORT_ID==11618)
+sep08nyc <- subset(sep08, sep08$ORIGIN_AIRPORT_ID==12953 | sep08$ORIGIN_AIRPORT_ID==12478 | sep08$ORIGIN_AIRPORT_ID==11618)
+sep09nyc <- subset(sep09, sep09$ORIGIN_AIRPORT_ID==12953 | sep09$ORIGIN_AIRPORT_ID==12478 | sep09$ORIGIN_AIRPORT_ID==11618)
+sep10nyc <- subset(sep10, sep10$ORIGIN_AIRPORT_ID==12953 | sep10$ORIGIN_AIRPORT_ID==12478 | sep10$ORIGIN_AIRPORT_ID==11618)
+sep11nyc <- subset(sep11, sep11$ORIGIN_AIRPORT_ID==12953 | sep11$ORIGIN_AIRPORT_ID==12478 | sep11$ORIGIN_AIRPORT_ID==11618)
+sep12nyc <- subset(sep12, sep12$ORIGIN_AIRPORT_ID==12953 | sep12$ORIGIN_AIRPORT_ID==12478 | sep12$ORIGIN_AIRPORT_ID==11618)
+sep13nyc <- subset(sep13, sep13$ORIGIN_AIRPORT_ID==12953 | sep13$ORIGIN_AIRPORT_ID==12478 | sep13$ORIGIN_AIRPORT_ID==11618)
+sep14nyc <- subset(sep14, sep14$ORIGIN_AIRPORT_ID==12953 | sep14$ORIGIN_AIRPORT_ID==12478 | sep14$ORIGIN_AIRPORT_ID==11618)
+sep15nyc <- subset(sep15, sep15$ORIGIN_AIRPORT_ID==12953 | sep15$ORIGIN_AIRPORT_ID==12478 | sep15$ORIGIN_AIRPORT_ID==11618)
+sep16nyc <- subset(sep16, sep16$ORIGIN_AIRPORT_ID==12953 | sep16$ORIGIN_AIRPORT_ID==12478 | sep16$ORIGIN_AIRPORT_ID==11618)
+
+sep16jfk <- subset(sep16nyc, sep16nyc$ORIGIN=="JFK")
+sep16lga <- subset(sep16nyc, sep16nyc$ORIGIN=="LGA")
+sep16ewr <- subset(sep16nyc, sep16nyc$ORIGIN=="EWR")
+
+library(ggplot2)
+  
+
+jfkdestinations <- table(sep16jfk$DEST_CITY_NAME)
+lgadestinations <- table(sep16lga$DEST_CITY_NAME)
+ewrdestinations <- table(sep16ewr$DEST_CITY_NAME)
+
+jfkdestinationfreq <- as.data.frame(jfkdestinations)
+lgadestinationfreq <- as.data.frame(lgadestinations)
+ewrdestinationfreq <- as.data.frame(ewrdestinations)
+
+View(jfkdestinationfreq)
+View(lgadestinationfreq)
+View(ewrdestinationfreq)
+
+top10jfk <- subset(jfkdestinationfreq, jfkdestinationfreq$Freq > 242)
+
+top10lga <- subset(lgadestinationfreq, lgadestinationfreq$Freq > 325)
+
+top10ewr <- subset(ewrdestinationfreq, ewrdestinationfreq$Freq > 275)
+
+```
+
+First, let's look at the top destinations from each airport in September 2016.
+
+```{r}
+
+ggplot(data=top10jfk, aes(x=top10jfk$Var1, y=top10jfk$Freq, fill=top10jfk$Var1)) + 
+  geom_bar(stat="identity") +
+  xlab("Destinations") +
+  ylab("Number of flights") +
+  scale_fill_discrete(name = "Destinations") +
+  ggtitle("Top destinations from JFK, Sept. 2016") +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank(), panel.background = element_blank(), legend.title=element_blank())
+
+##
+
+ggplot(data=top10lga, aes(x=top10lga$Var1, y=top10lga$Freq, fill=top10lga$Var1)) + 
+  geom_bar(stat="identity") +
+  xlab("Destination") +
+  ylab("Number of flights") +
+  ggtitle("Top destinations from LaGuardia, Sept. 2016") +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank(), panel.background = element_blank(), panel.background = element_blank(), legend.title=element_blank())
+
+##
+
+ggplot(data=top10ewr, aes(x=top10ewr$Var1, y=top10ewr$Freq, fill=top10ewr$Var1)) + 
+  geom_bar(stat="identity") +
+  xlab("Destination") +
+  ylab("Number of flights") +
+  ggtitle("Top destinations from Newark, Sept. 2016") +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank(), panel.background = element_blank(), legend.title=element_blank())
+  
+
+###Presentation given at this point###
+
+```
+
+Now, let's combine all New York flights for the 20-year period into one master file.
+
+```{r}
+
+allnycflights <- rbind(oct96nyc, nov96nyc, dec96nyc, jan97nyc, feb97nyc, mar97nyc, apr97nyc, may97nyc, jun97nyc, jul97nyc, aug97nyc, sep97nyc, oct97nyc, nov97nyc, dec97nyc, jan98nyc, feb98nyc, mar98nyc, apr98nyc, may98nyc, jun98nyc, jul98nyc, aug98nyc, sep98nyc, oct98nyc, nov98nyc, dec98nyc, jan99nyc, feb99nyc, mar99nyc, apr99nyc, may99nyc, jun99nyc, jul99nyc, aug99nyc, sep99nyc, oct99nyc, nov99nyc, dec99nyc, jan00nyc, feb00nyc, mar00nyc, apr00nyc, may00nyc, jun00nyc, jul00nyc, aug00nyc, sep00nyc, oct00nyc, nov00nyc, dec00nyc, jan01nyc, feb01nyc, mar01nyc, apr01nyc, may01nyc, jun01nyc, jul01nyc, aug01nyc, sep01nyc, oct01nyc, nov01nyc, dec01nyc, jan02nyc, feb02nyc, mar02nyc, apr02nyc, may02nyc, jun02nyc, jul02nyc, aug02nyc, sep02nyc, oct02nyc, nov02nyc, dec02nyc, jan03nyc, feb03nyc, mar03nyc, apr03nyc, may03nyc, jun03nyc, jul03nyc, aug03nyc, sep03nyc, oct03nyc, nov03nyc, dec03nyc, jan04nyc, feb04nyc, mar04nyc, apr04nyc, may04nyc, jun04nyc, jul04nyc, aug04nyc, sep04nyc, oct04nyc, nov04nyc, dec04nyc, jan05nyc, feb05nyc, mar05nyc, apr05nyc, may05nyc, jun05nyc, jul05nyc, aug05nyc, sep05nyc, oct05nyc, nov05nyc, dec05nyc, jan06nyc, feb06nyc, mar06nyc, apr06nyc, may06nyc, jun06nyc, jul06nyc, aug06nyc, sep06nyc, oct06nyc, nov06nyc, dec06nyc, jan07nyc, feb07nyc, mar07nyc, apr07nyc, may07nyc, jun07nyc, jul07nyc, aug07nyc, sep07nyc, oct07nyc, nov07nyc, dec07nyc, jan08nyc, feb08nyc, mar08nyc, apr08nyc, may08nyc, jun08nyc, jul08nyc, aug08nyc, sep08nyc, oct08nyc, nov08nyc, dec08nyc, jan09nyc, feb09nyc, mar09nyc, apr09nyc, may09nyc, jun09nyc, jul09nyc, aug09nyc, sep09nyc, oct09nyc, nov09nyc, dec09nyc, jan10nyc, feb10nyc, mar10nyc, apr10nyc, may10nyc, jun10nyc, jul10nyc, aug10nyc, sep10nyc, oct10nyc, nov10nyc, dec10nyc, jan11nyc, feb11nyc, mar11nyc, apr11nyc, may11nyc, jun11nyc, jul11nyc, aug11nyc, sep11nyc, oct11nyc, nov11nyc, dec11nyc, jan12nyc, feb12nyc, mar12nyc, apr12nyc, may12nyc, jun12nyc, jul12nyc, aug12nyc, sep12nyc, oct12nyc, nov12nyc, dec12nyc, jan13nyc, feb13nyc, mar13nyc, apr13nyc, may13nyc, jun13nyc, jul13nyc, aug13nyc, sep13nyc, oct13nyc, nov13nyc, dec13nyc, jan14nyc, feb14nyc, mar14nyc, apr14nyc, may14nyc, jun14nyc, jul14nyc, aug14nyc, sep14nyc, oct14nyc, nov14nyc, dec14nyc, jan15nyc, feb15nyc, mar15nyc, apr15nyc, may15nyc, jun15nyc, jul15nyc, aug15nyc, sep15nyc, oct15nyc, nov15nyc, dec15nyc, jan16nyc, feb16nyc, mar16nyc, apr16nyc, may16nyc, jun16nyc, jul16nyc, aug16nyc, sep16nyc)
+
+colnames(allnycflights)
+
+allewrflights <- subset(allnycflights, allnycflights$ORIGIN=="EWR")
+alljfkflights <- subset(allnycflights, allnycflights$ORIGIN=="JFK")
+alllgaflights <- subset(allnycflights, allnycflights$ORIGIN=="LGA")
+
+ewrflightsbyyear <- allewrflights %>%
+  group_by("YEAR")
+
+jfkflightsbyyear <- alljfkflights %>%
+  group_by("YEAR")
+
+lgaflightsbyyear <- alllgaflights %>%
+  group_by("YEAR")
+
+ewrflightsyrdest <- ewrflightsbyyear %>%
+  group_by("DEST_CITY_NAME")
+
+jfkflightsyrdest <- jfkflightsbyyear %>%
+  group_by("DEST_CITY_NAME")
+
+lgaflightsyrdest <- lgaflightsbyyear %>%
+  group_by("DEST_CITY_NAME")
+
+allnycflightsgrouped <- table(allnycflights$ORIGIN, allnycflights$YEAR, allnycflights$UNIQUE_CARRIER, allnycflights$DEST_CITY_NAME)
+
+allnycflightsbyairline <- table(allnycflights$ORIGIN, allnycflights$YEAR, allnycflights$UNIQUE_CARRIER)
+
+allnycflightsbydest <- table(allnycflights$ORIGIN, allnycflights$YEAR, allnycflights$DEST_CITY_NAME)
+
+allnycdests <- as.data.frame(allnycflightsbydest)
+allnycairlines <- as.data.frame(allnycflightsbyairline)
+
+View(allnycdests)
+View(allnycairlines)
+
+names(allnycdests) <- c("Airport", "Year", "Destination", "Frequency")
+names(allnycairlines) <- c("Airport", "Year", "Airline", "Frequency")
+
+##
+
+```
+
+Next steps: A full economic analysis would have to incorporate financial impacts, including airfare estimates, the revenues from the businesses at each airport, and capacity figures both for airports and planes.
